@@ -1,6 +1,7 @@
 # Table of Contents
 1. [Usage](README.md#Usage)
 1. [Input Dataset and Output Format](README.md#input-dataset-and-output)
+1. [Repo directory structure](README.md#repo-directory-structure)
 1. [How to run the code](README.md#how-to-run-the-code)
 
 # Usage

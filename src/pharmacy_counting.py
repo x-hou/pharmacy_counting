@@ -46,19 +46,14 @@ class Preprocessor:
                 record = Preprocessor.data_cleanser(line)
                 prescriber_name = record[1] + ' ' + record[2]
 
+
+                # put record into dicts
                 if record[3] not in self.__prescriber_dict:
                     self.__prescriber_dict[record[3]] = {prescriber_name}
                     self.__drug_dict[record[3]] = record[-1]
                 else:
                     self.__prescriber_dict[record[3]].add(prescriber_name)
                     self.__drug_dict[record[3]] += record[-1]
-
-                # try:
-                #     self.__prescriber_dict[record[3]].add(prescriber_name)
-                #     self.__drug_dict[record[3]] += record[-1]
-                # except KeyError:
-                #     self.__prescriber_dict[record[3]] = {prescriber_name}
-                #     self.__drug_dict[record[3]] = record[-1]
 
                 line = input_file.readline()
 
@@ -119,7 +114,6 @@ class Preprocessor:
                 line = ','.join(line)
                 line += '\n'
                 file.write(bytes(line, 'utf8'))
-
 
 
 if __name__ == "__main__":
