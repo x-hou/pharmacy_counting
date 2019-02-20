@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
 """
->>> a = Preprocessor()
->>> print(a.read_file('../input/itcont.txt'))
-Total read 5 lines.
+>>> test = Preprocessor()
+>>> test.read_file('../insight_testsuite/tests/test_1/input/itcont.txt')
+Total read in 5 records.
 """
 import sys
+import re
 
 class Preprocessor:
     """
@@ -33,7 +34,7 @@ class Preprocessor:
         """
         Function to read medical record.
         :param input_file_name: The path of input file
-        :return: Number of processed line.
+        :return: None
         """
         with open(input_file_name, 'rb') as input_file:
             line = input_file.readline() # skip first row
@@ -42,49 +43,58 @@ class Preprocessor:
             while line:
                 self.__counter += 1
 
-                record = self.__data_cleanser(line)
+                record = Preprocessor.data_cleanser(line)
+                prescriber_name = record[1] + ' ' + record[2]
 
-                prescriber_name = ' '.join(record[1:3])
-
-                try:
-                    self.__prescriber_dict[record[3]].add(prescriber_name)
-                    self.__drug_dict[record[3]] += record[-1]
-                except KeyError:
+                if record[3] not in self.__prescriber_dict:
                     self.__prescriber_dict[record[3]] = {prescriber_name}
                     self.__drug_dict[record[3]] = record[-1]
+                else:
+                    self.__prescriber_dict[record[3]].add(prescriber_name)
+                    self.__drug_dict[record[3]] += record[-1]
+
+                # try:
+                #     self.__prescriber_dict[record[3]].add(prescriber_name)
+                #     self.__drug_dict[record[3]] += record[-1]
+                # except KeyError:
+                #     self.__prescriber_dict[record[3]] = {prescriber_name}
+                #     self.__drug_dict[record[3]] = record[-1]
 
                 line = input_file.readline()
 
-        print('Total read ' + str(self.__counter) + ' lines.')
-        return self.__counter
+        print('Total read in ' + str(self.__counter) + ' records.')
 
-    def __data_cleanser(self, record: bytes):
+    @staticmethod
+    def data_cleanser(record: bytes):
         """
-        Function to preprocess the origin medical record.
-        :param record:
-        :return:
+        Function to preprocess the origin medical record. Comma inside the record is annoying.
+        For example:
+
+        457467862,"ADAIR,",ROBERT,AVODART,4729.76
+
+        Reference: https://stackoverflow.com/questions/38336518/remove-all-commas-between-quotes
+        :param record: Record in bytes format
+        :return: Cleaned record in a list
+        >>> Preprocessor.data_cleanser(b'457467862,"ADAIR,",ROBERT,AVODART,4729.76')
+        [457467862, '"ADAIR"', 'ROBERT', 'AVODART', 4729.76]
+        >>> Preprocessor.data_cleanser(b'457467862,"ADAIR,",ROBERT,AVODART,4729.76t')
+        Type error for record:
+        [457467862, '"ADAIR"', 'ROBERT', 'AVODART', '4729.76t']
+
         """
         record = record.decode('utf8')
-        if record.find('"') >= 0:
 
-            start = record.find('"')
-            # Strip all commas inside all the quotations
-            while start >= 0:
-                end = record[start+1:].find('"')
-                if end >= 0:
-                    end = end+start+1
-                    record = record[:start]+record[start:end+1].replace(',', '')+record[end+1:]
-                start = record[end+1:].find('"')
+        if record.find('"') >= 0:
+            # remove commas inside " "
+            record = re.sub(r'(?!(([^"]*"){2})*[^"]*$),', '', record)
 
         record = record.split(',')
 
-        if len(record) != 5:
-            print('A row must have 5 columns but found this row')
-            print(','.join(record))
-            sys.exit(0)
-
-        record[0] = int(record[0])
-        record[4] = int(record[-1].replace('\n', ''))
+        try:
+            record[0] = int(record[0])
+            record[4] = float(record[-1].replace('\n', '')) # get rid of '\n' in the end
+        except:
+            print("Type error for record:")
 
         return record
 
@@ -94,40 +104,30 @@ class Preprocessor:
         :param output_file_name: the path of output file
         :return: None
         """
-        # Write the output file
+        # write the output file
         with open(output_file_name, 'wb') as file:
-            # Write header of the file
+            # write header of the file
             file.write(b'drug_name,num_prescriber,total_cost\n')
 
-            # Sort the keys by the values of drug_cost and if there is a tie, drug name.
+            # sort in descending order based on the total drug cost and if there is a tie, drug name in ascending order
             for drug, value in sorted(self.__drug_dict.items(), key=lambda x: (x[1], x[0]), reverse=True):
-                # Write to the output file in descending order
                 line = list()
                 line.append(drug)
                 line.append(str(len(self.__prescriber_dict[drug])))
-                line.append(str(self.__drug_dict[drug]))
+                line.append(str(int(self.__drug_dict[drug])))
 
-                next_line = ','.join(line)
-                next_line += '\n'
-                file.write(bytes(next_line, 'utf8'))
+                line = ','.join(line)
+                line += '\n'
+                file.write(bytes(line, 'utf8'))
 
-        # # Open and print top 10 lines of the output file
-        # print('\nTop 5 lines of the output file\n')
-        # with open(output_file_name, 'rb') as file:
-        #
-        #     line = file.readline()
-        #     n_lines = 0
-        #     while len(line) > 0 and n_lines < 6:
-        #         n_lines += 1
-        #         print(line)
-        #         line = file.readline()
 
 
 if __name__ == "__main__":
-    input_fname, output_fname = sys.argv[1:]
+    input_file, output_file = sys.argv[1:]
+
     test = Preprocessor()
-    test.read_file(input_fname)
-    test.write_file(output_fname)
+    test.read_file(input_file)
+    test.write_file(output_file)
 
 
 
