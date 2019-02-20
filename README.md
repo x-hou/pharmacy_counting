@@ -72,5 +72,5 @@ These files are provided in the `insight_testsuite/tests/test_1/input` and `insi
 # How to run the code
 
 There are two ways to run the code
-1. Open Shell, Type in "Python3 ./src/pharmacy_counting INPUT_FILE_PATH OUTPUT_FILE_PATH"
+1. Open Shell, Type in "Python3  ./src/pharmacy_counting.py  INPUT_FILE_PATH  OUTPUT_FILE_PATH"
 1. Run the "run.sh" in shell. The input file is in input folder and output file will be in output foler.
