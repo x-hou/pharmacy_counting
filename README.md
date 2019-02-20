@@ -5,8 +5,7 @@
 1. [Instructions](README.md#instructions)
 1. [Output](README.md#output)
 1. [Tips on getting an interview](README.md#tips-on-getting-an-interview)
-1. [Questions?](README.md#questions?)
-
+1. [How to run the code](README.md#how-to-run-the-code)
 # Problem
 
 Imagine you are a data engineer working for an online pharmacy. You are asked to generate a list of all drugs, the total number of UNIQUE individuals who prescribed the medication, and the total drug cost, which must be listed in descending order based on the total drug cost and if there is a tie, drug name in ascending order. 
@@ -95,7 +94,6 @@ If your solution requires additional libraries, environments, or dependencies, y
 
 ## Repo directory structure
 
-The directory structure for your repo should look like this:
 
     ├── README.md 
     ├── run.sh
@@ -149,5 +147,7 @@ Your submission must pass at least the provided test in order to pass the coding
 
 For a limited time we also are making available a <a href="http://ec2-18-210-131-67.compute-1.amazonaws.com/test-my-repo-link">website</a> that will allow you to simulate the environment in which we will test your code. It has been primarily tested on Python code but could be used for Java and C++ repos. Keep in mind that if you need to compile your code (e.g., javac, make), that compilation needs to happen in the `run.sh` file of your code repository. For Python programmers, you are able to use Python2 or Python3 but if you use the later, specify `python3` in your `run.sh` script.
 
-# Questions?
-Email us at cc@insightdataengineering.com
+#how-to-run-the-code
+##There are two ways to run the code
+1. Open Shell, Type in "Python3 ./src/pharmacy_counting INPUT_FILE_PATH OUTPUT_FILE_PATH"
+1. Run the "run.sh" in shell. The input file is in input folder and output file will be in output foler.
